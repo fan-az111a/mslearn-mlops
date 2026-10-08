@@ -29,9 +29,9 @@ def main(args):
     if args.metrics_output:
         save_metrics(metrics, args.metrics_output)
 
-    # persist metrics so the workflow can comment the actual values deterministically
-    if args.metrics_output:
-        save_metrics(metrics, args.metrics_output)
+    # persist the trained model as an MLflow model
+    if args.model_output:
+        save_model(model, args.model_output)
 
 def get_data(path):
     # function that reads the data from a file or a folder of CSV files
