@@ -75,6 +75,8 @@ jobs:
 
           MODEL_VERSION=$(az ml model list \
             --name "$MODEL_NAME" \
+            --resource-group "${{ steps.detect.outputs.resource_group }}" \
+            --workspace-name "${{ steps.detect.outputs.workspace }}" \
             --query "[].version" \
             -o tsv | sort -r | head -n 1)
 
