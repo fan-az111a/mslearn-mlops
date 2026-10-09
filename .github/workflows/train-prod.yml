@@ -65,10 +65,6 @@ jobs:
 
           echo "job_name=$JOB_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Stream prod training job
-        run: |
-          az ml job stream --name "${{ steps.train.outputs.job_name }}" | tee prod_training_output.log
-
       - name: Wait for prod training job to complete
         run: |
           JOB_NAME="${{ steps.train.outputs.job_name }}"
