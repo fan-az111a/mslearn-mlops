@@ -3,6 +3,7 @@ import glob
 import json
 import os
 import mlflow
+import mlflow.sklearn
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -27,6 +28,10 @@ def main(args):
     # persist metrics so the workflow can comment the actual values deterministically
     if args.metrics_output:
         save_metrics(metrics, args.metrics_output)
+
+    # persist the trained model as an MLflow model
+    if args.model_output:
+        save_model(model, args.model_output)
 
 def get_data(path):
     # function that reads the data from a file or a folder of CSV files
@@ -100,6 +105,22 @@ def save_metrics(metrics, output_dir):
 
     print(f"Saved metrics to {metrics_path}")
 
+def save_model(model, output_dir):
+    model_path = os.path.join(output_dir, "mlflow-model")
+
+    mlflow.sklearn.save_model(
+        sk_model=model,
+        path=model_path,
+        extra_pip_requirements=[
+            "azureml-inference-server-http",
+            "azureml-ai-monitoring",
+            "azureml-contrib-services",
+            "numpy<2",
+        ],
+    )
+
+    print(f"Saved MLflow model to {model_path}")
+
 def parse_args():
     # setup arg parser
     parser = argparse.ArgumentParser()
@@ -111,6 +132,8 @@ def parse_args():
                         type=float, default=0.015)
     parser.add_argument("--metrics_output", dest='metrics_output',
                         type=str, default=None)
+    parser.add_argument("--model_output", dest='model_output',
+                    type=str, default=None)
 
     # parse args
     args = parser.parse_args()
